@@ -18,22 +18,24 @@ describe 'Withdraw' do
       expect(browser.last_response.status).to eq(200)
     end
 
-    it 'positive value' do
+    it 'one' do
       post_params = {amount: 1}
       browser.put '/api/v1/withdraw', post_params
       expect(JSON.parse browser.last_response.body).to eq({'1' => 1})
     end
 
-    it 'all existing bankbotes' do
-      post_params = {amount: 10}
+    it 'consume one type' do
+      post_params = {amount: 500}
       browser.put '/api/v1/withdraw', post_params
-      expect(JSON.parse browser.last_response.body).to eq({'5' => 2})
+      expect(JSON.parse browser.last_response.body).to eq({'50' => 10})
+      expect($atm.current_deposit).to eq({'1' => 10, '2' => 10, '5' => 10, '10' => 10, '25' => 10, '50' => 0})
     end
 
-    it 'all balance' do
+    it 'consume all balance' do
       post_params = {amount: 930}
       browser.put '/api/v1/withdraw', post_params
       expect(JSON.parse browser.last_response.body).to eq({'1' => 10, '2' => 10, '5' => 10, '10' => 10, '25' => 10, '50' => 10})
+      expect($atm.current_deposit).to eq({'1' => 0, '2' => 0, '5' => 0, '10' => 0, '25' => 0, '50' => 0})
     end
   end
 
@@ -50,7 +52,7 @@ describe 'Withdraw' do
       expect(response['error']).to eq 'amount does not have a valid value'
     end
 
-    it 'exceed' do
+    it 'exceed current balance' do
       post_params = {amount: 950}
       browser.put '/api/v1/withdraw', post_params
       response = JSON.parse browser.last_response.body
@@ -78,6 +80,17 @@ describe 'Withdraw' do
       response = JSON.parse browser.last_response.body
       expect(response['error']).to eq 'amount does not have a valid value'
     end
+
+    it 'empty' do
+      post_params = {}
+      browser.put '/api/v1/withdraw', post_params
+      expect(browser.last_response.body).to include 'amount is missing, amount is empty, amount does not have a valid value'
+    end
+
+    it 'nil value' do
+      post_params = {amount: nil}
+      browser.put '/api/v1/withdraw', post_params
+    end
   end
 
   context '500 calls' do
@@ -96,6 +109,5 @@ describe 'Withdraw' do
       expect($atm.current_deposit).to eq({'1' => 2, '2' => 0, '5' => 3, '10' => 10, '25' => 10, '50' => 10})
     end
   end
-
 
 end
