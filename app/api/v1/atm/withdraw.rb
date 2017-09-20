@@ -27,10 +27,10 @@ class Withdraw < Grape::API
         withdrawn_notes[note] = actual_notes.to_i
       end
     end
+
+    error! error: "Not enough banknotes. Please try another amount. Closest is #{withdrawn_amount}" if withdrawn_amount < params[:amount]
+
     $atm.current_deposit.merge!(withdrawn_notes) {|key,val1,val2| val1-val2}
-
-    error! error: "Not enough banknotes. Please try another amount" if withdrawn_amount < params[:amount]
-
     withdrawn_notes
   end
 

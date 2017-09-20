@@ -55,6 +55,7 @@ describe 'Withdraw' do
       browser.put '/api/v1/withdraw', post_params
       response = JSON.parse browser.last_response.body
       expect(response['error']).to eq 'amount does not have a valid value'
+      expect($atm.current_deposit).to eq({'1' => 10, '2' => 10, '5' => 10, '10' => 10, '25' => 10, '50' => 10})
     end
 
     it 'float' do
@@ -91,7 +92,8 @@ describe 'Withdraw' do
         browser.put '/api/v1/withdraw', post_params
       end
       response = JSON.parse browser.last_response.body
-      expect(response['error']).to eq 'Not enough banknotes. Please try another amount'
+      expect(response['error']).to eq 'Not enough banknotes. Please try another amount. Closest is 7'
+      expect($atm.current_deposit).to eq({'1' => 2, '2' => 0, '5' => 3, '10' => 10, '25' => 10, '50' => 10})
     end
   end
 
