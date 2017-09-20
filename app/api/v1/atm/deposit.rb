@@ -13,6 +13,10 @@ class Deposit < Grape::API
   end
 
   post :deposit do
+    if (declared(params, include_missing: false)).to_hash != params
+      error! 'Invalid banknote request received'
+    end
+
     params.each_pair do |key, value|
       $atm.current_deposit[key] += value.to_i
     end

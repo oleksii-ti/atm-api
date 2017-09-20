@@ -43,11 +43,6 @@ describe Deposit do
       browser.post '/api/v1/deposit', post_params
     end
 
-    it 'few banknotes with one incorrect' do
-      post_params = {'1' => 5, '11' => 5}
-      browser.post '/api/v1/deposit', post_params
-    end
-
     it 'incorrect banknote' do
       post_params = {'31' => 5}
       browser.post '/api/v1/deposit', post_params
@@ -85,6 +80,13 @@ describe Deposit do
 
     it 'nil value' do
       post_params = {'1': nil}
+      browser.post '/api/v1/deposit', post_params
+    end
+  end
+
+  context '500 calls' do
+    it 'few banknotes with one incorrect' do
+      post_params = {'1' => 5, '11' => 5}
       browser.post '/api/v1/deposit', post_params
     end
   end
