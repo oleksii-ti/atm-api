@@ -81,6 +81,13 @@ describe 'Withdraw' do
       expect(response['error']).to eq 'amount does not have a valid value'
     end
 
+    it 'non-numeric' do
+      post_params = {amount: 'ten'}
+      browser.put '/api/v1/withdraw', post_params
+      response = JSON.parse browser.last_response.body
+      expect(response['error']).to eq 'amount is invalid, amount does not have a valid value'
+    end
+
     it 'empty' do
       post_params = {}
       browser.put '/api/v1/withdraw', post_params
