@@ -37,6 +37,14 @@ describe 'Withdraw' do
       expect(JSON.parse browser.last_response.body).to eq({'1' => 10, '2' => 10, '5' => 10, '10' => 10, '25' => 10, '50' => 10})
       expect($atm.current_deposit).to eq({'1' => 0, '2' => 0, '5' => 0, '10' => 0, '25' => 0, '50' => 0})
     end
+
+    it 'shift banknotes before getting correct amount' do
+      $atm.current_deposit = {'1' => 0, '2' => 0, '5' => 0, '10' => 10, '25' => 1, '50' => 10}
+      post_params = {amount: 40}
+      browser.put '/api/v1/withdraw', post_params
+      response = JSON.parse browser.last_response.body
+      expect($atm.current_deposit).to eq({'1' => 0, '2' => 0, '5' => 0, '10' => 6, '25' => 1, '50' => 10})
+    end
   end
 
   context '400 calls' do
@@ -115,6 +123,7 @@ describe 'Withdraw' do
       expect(response['error']).to eq 'Not enough banknotes. Please try another amount. Closest is 7'
       expect($atm.current_deposit).to eq({'1' => 2, '2' => 0, '5' => 3, '10' => 10, '25' => 10, '50' => 10})
     end
+
   end
 
 end

@@ -1,5 +1,6 @@
 require './app/models/atm.rb'
-$atm = ATM.new
+
+$atm = ATM.instance
 
 require './app/api/v1/atm/deposit.rb'
 require './app/api/v1/atm/withdraw.rb'

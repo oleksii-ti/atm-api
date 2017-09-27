@@ -82,12 +82,18 @@ describe Deposit do
       post_params = {'1': nil}
       browser.post '/api/v1/deposit', post_params
     end
+
+    it 'no params' do
+      browser.post '/api/v1/deposit'
+      expect(browser.last_response.status).to eq(400)
+    end
   end
 
   context '500 calls' do
     it 'few banknotes with one incorrect' do
       post_params = {'1' => 5, '11' => 5}
       browser.post '/api/v1/deposit', post_params
+      expect(browser.last_response.body).to include 'Invalid banknote request received'
     end
   end
 
